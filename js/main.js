@@ -22,59 +22,74 @@ var game = new Phaser.Game(config);
 var map;
 var player;
 var cursors;
-var groundLayer, coinLayer;
+var skyLayer, worldLayer, leverLayer, treasureLayer, accentsLayer, behindLayer;
 var text;
 var score = 0;
 
 function preload() {
     // map made with Tiled in JSON format
-    this.load.tilemapTiledJSON('map', 'assets/map.json');
+    this.load.tilemapTiledJSON('map', 'assets/CastleMap.json');
     // tiles in spritesheet 
-    this.load.spritesheet('tiles', 'assets/tiles.png', {frameWidth: 70, frameHeight: 70});
-    // simple coin image
-    this.load.image('coin', 'assets/coinGold.png');
+    this.load.spritesheet('Gothic_Castle_Tileset', 'assets/Gothic_Castle_Tileset.png', {frameWidth: 16, frameHeight: 16});
     // player animations
     this.load.atlas('player', 'assets/player.png', 'assets/player.json');
-   //star--will be lever
+    //star--will be lever
     this.load.image('lever', 'assets/star.png');
+    // Sky background    
+    this.load.image('Sky', 'assets/sky.png')
 }
 
 function create() {
     // load the map 
     map = this.make.tilemap({key: 'map'});
-
-    // tiles for the ground layer
-    var groundTiles = map.addTilesetImage('tiles');
-    // create the ground layer
-    groundLayer = map.createDynamicLayer('World', groundTiles, 0, 0);
+    
+    // Sky background tiles
+    var skyTiles = map.addTilesetImage('Sky');
+    // SKy background layer
+    skyLayer = map.createDynamicLayer('Sky', skyTiles, 0, 0);
+    
+    // Background artifacts tiles
+    var behindTiles = map.addTilesetImage('Gothic_Castle_Tileset');
+    // Background artifacts layer
+    behindLayer = map.createDynamicLayer('Behind', behindTiles, 0, 0);
+    
+    // Background accents tiles
+    var accentsTiles = map.addTilesetImage('Gothic_Castle_Tileset');
+    // Background Accents layer
+    accentsLayer = map.createDynamicLayer('BehindAccents', accentsTiles, 0, 0);
+    
+    // World collision tiles
+    var worldTiles = map.addTilesetImage('Gothic_Castle_Tileset');
+    // create the world layer
+    worldLayer =    map.createDynamicLayer('World', worldTiles, 0, 0);
     // the player will collide with this layer
-    groundLayer.setCollisionByExclusion([-1]);
+    worldLayer.setCollisionByExclusion([-1]);
 
-    // coin image used as tileset
-    var coinTiles = map.addTilesetImage('coin');
-    // add coins as tiles
-    coinLayer = map.createDynamicLayer('Coins', coinTiles, 0, 0);
+    // treasure image used as tileset
+    var treasureTiles = map.addTilesetImage('Gothic_Castle_Tileset');
+    // add treasure as tiles
+    treasureLayer = map.createDynamicLayer('Treasure', treasureTiles, 0, 0);
     
     
     // set the boundaries of our game world
-    this.physics.world.bounds.width = groundLayer.width;
-    this.physics.world.bounds.height = groundLayer.height;
+    this.physics.world.bounds.width = worldLayer.width;
+    this.physics.world.bounds.height = worldLayer.height;
 
     // create the player sprite    
-    player = this.physics.add.sprite(200, 200, 'player');
+    player = this.physics.add.sprite(0, 600, 'player').setScale(.5);
     player.setBounce(0.2); // our player will bounce from items
     player.setCollideWorldBounds(true); // don't go out of the map    
     
     // small fix to our player images, we resize the physics body object slightly
-    player.body.setSize(player.width, player.height-8);
+    player.body.setSize(player.width, player.height);
     
     // player will collide with the level tiles 
-    this.physics.add.collider(groundLayer, player);
+    this.physics.add.collider(worldLayer, player);
 
-    coinLayer.setTileIndexCallback(17, collectCoin, this);
-    // when the player overlaps with a tile with index 17, collectCoin 
+    treasureLayer.setTileIndexCallback(153, collectTreasure, this);
+    // when the player overlaps with a tile with index 152, collectTreasure 
     // will be called    
-    this.physics.add.overlap(player, coinLayer);
+    this.physics.add.overlap(player, treasureLayer);
 
     // player walk animation
     this.anims.create({
@@ -114,13 +129,13 @@ function create() {
     lever = this.physics.add.image(400, 400, 'lever');
     lever.setCollideWorldBounds(true); // don't go out of the map
     // lever will collide with the level tiles 
-    this.physics.add.collider(groundLayer, lever);
+    this.physics.add.collider(worldLayer, lever);
     this.physics.add.overlap(player, lever, flipLever);
 }
 
-// this function will be called when the player touches a coin
-function collectCoin(sprite, tile) {
-    coinLayer.removeTileAt(tile.x, tile.y); // remove the tile/coin
+// this function will be called when the player touches a treasure chest
+function collectTreasure(sprite, tile) {
+    treasureLayer.removeTileAt(tile.x, tile.y); // remove the tile/coin
     score++; // add 10 points to the score
     text.setText(score); // set the text to show the current score
     return false;
