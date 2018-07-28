@@ -111,7 +111,7 @@ function create() {
     
    //star added, will be lever
     this.add.image(600, 400, 'lever');
-    lever = this.physics.add.image(400, 400, 'lever');
+    lever = this.physics.add.image(250, 400, 'lever');
     lever.setCollideWorldBounds(true); // don't go out of the map
     // lever will collide with the level tiles 
     this.physics.add.collider(groundLayer, lever);
@@ -128,8 +128,13 @@ function collectCoin(sprite, tile) {
 
 
 function flipLever(player, lever) {
-    player.flipY = true;
-    player.body.allowGravity = false;
+     if (cursors.up.isDown && player.body.onFloor())
+    {
+        player.setBounce(.9);
+        
+    }
+    
+    
   
 }
 
@@ -154,4 +159,5 @@ function update(time, delta) {
     {
         player.body.setVelocityY(-500);        
     }
+    
 }
