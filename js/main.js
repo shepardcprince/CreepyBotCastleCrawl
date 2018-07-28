@@ -35,6 +35,8 @@ function preload() {
     this.load.image('coin', 'assets/coinGold.png');
     // player animations
     this.load.atlas('player', 'assets/player.png', 'assets/player.json');
+   //star--will be lever
+    this.load.image('lever', 'assets/star.png');
 }
 
 function create() {
@@ -52,7 +54,8 @@ function create() {
     var coinTiles = map.addTilesetImage('coin');
     // add coins as tiles
     coinLayer = map.createDynamicLayer('Coins', coinTiles, 0, 0);
-
+    
+    
     // set the boundaries of our game world
     this.physics.world.bounds.width = groundLayer.width;
     this.physics.world.bounds.height = groundLayer.height;
@@ -105,6 +108,14 @@ function create() {
     });
     // fix the text to the camera
     text.setScrollFactor(0);
+    
+   //star added, will be lever
+    this.add.image(600, 400, 'lever');
+    lever = this.physics.add.image(400, 400, 'lever');
+    lever.setCollideWorldBounds(true); // don't go out of the map
+    // lever will collide with the level tiles 
+    this.physics.add.collider(groundLayer, lever);
+    this.physics.add.overlap(player, lever, flipLever);
 }
 
 // this function will be called when the player touches a coin
@@ -113,6 +124,13 @@ function collectCoin(sprite, tile) {
     score++; // add 10 points to the score
     text.setText(score); // set the text to show the current score
     return false;
+}
+
+
+function flipLever(player, lever) {
+    player.flipY = true;
+    player.body.allowGravity = false;
+  
 }
 
 function update(time, delta) {
