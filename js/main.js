@@ -159,9 +159,9 @@ function create() {
     this.cameras.main.setBackgroundColor('#ccccff');
 
     // this text will show the score
-    text = this.add.text(20, 570, '0', {
+    text = this.add.text(570, 20, 'Treasure Chests:', {
         fontSize: '20px',
-        fill: '#ffffff'
+        fill: '#FFFF00'
     });
     // fix the text to the camera
     text.setScrollFactor(0);
@@ -179,13 +179,13 @@ function create() {
 
 // this function will be called when the player touches a treasure chest
 function collectTreasure(sprite, tile) {
-    treasureLayer.removeTileAt(tile.x, tile.y); // remove the tile/coin
+    treasureLayer.removeTileAt(tile.x, tile.y); // remove the treasure chest
     score++; // add 10 points to the score
-    text.setText(score); // set the text to show the current score
+    text.setText('Treasure Chests:' + score); // set the text to show the current score
     return false;
 }
 
-
+//flips the player when they touch the lever
 function flipLever(player, lever) {
         if (this.time.now - this.fliptime < 1000)
             {return;}
@@ -196,7 +196,7 @@ function flipLever(player, lever) {
 }
 
 function update(time, delta) {
-    //for regular play (not inverted)
+    //for regular play (not inverted) movement
     if (cursors.left.isDown)
     {
         player.body.setVelocityX(-200);
@@ -218,18 +218,18 @@ function update(time, delta) {
         player.body.setVelocityY(-500);        
     }
     
-    //for inverted play
+    //for inverted play movement
        if (cursors.left.isDown && player.inverted)
     {
         player.body.setVelocityX(-200);
-        player.anims.play('walk', true); // walk left
-        player.flipX = false; // flip the sprite to the left
+        player.anims.play('walk', true); 
+        player.flipX = false; // flip the sprite to the right
     }
     else if (cursors.right.isDown && player.inverted)
     {
         player.body.setVelocityX(200);
         player.anims.play('walk', true);
-        player.flipX = true; // use the original sprite looking to the right
+        player.flipX = true; // use the original sprite looking to the left
     } 
    
     if (cursors.down.isDown && player.inverted && player.body.blocked.up)
@@ -241,6 +241,7 @@ function update(time, delta) {
         
 }
 
+//inverts the gravity depending on current state of player
 function inverseGravity() 
 {    
     if (player.inverted === false) 
