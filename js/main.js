@@ -161,6 +161,7 @@ function flipLever(player, lever) {
 }
 
 function update(time, delta) {
+    //for regular play (not inverted)
     if (cursors.left.isDown)
     {
         player.body.setVelocityX(-200);
@@ -182,6 +183,20 @@ function update(time, delta) {
         player.body.setVelocityY(-500);        
     }
     
+    //for inverted play
+       if (cursors.left.isDown && player.inverted)
+    {
+        player.body.setVelocityX(-200);
+        player.anims.play('walk', true); // walk left
+        player.flipX = false; // flip the sprite to the left
+    }
+    else if (cursors.right.isDown && player.inverted)
+    {
+        player.body.setVelocityX(200);
+        player.anims.play('walk', true);
+        player.flipX = true; // use the original sprite looking to the right
+    } 
+   
     if (cursors.down.isDown && player.inverted && player.body.blocked.up)
     {
         player.body.setVelocityY(500);  
