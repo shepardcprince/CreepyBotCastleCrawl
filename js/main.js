@@ -35,7 +35,7 @@ function preload() {
     // tiles in spritesheet 
     this.load.spritesheet('Gothic_Castle_Tileset', 'assets/Gothic_Castle_Tileset.png', {frameWidth: 16, frameHeight: 16});
     // player animations
-    this.load.atlas('player', 'assets/player.png', 'assets/player.json');
+    this.load.spritesheet('player', 'assets/robot.png', {frameWidth: 17, frameHeight: 32});
     //star--will be lever
     this.load.image('lever', 'assets/star.png');
     // Sky background    
@@ -81,14 +81,14 @@ function create() {
     this.physics.world.bounds.height = worldLayer.height;
 
     // create the player sprite    
-    player = this.physics.add.sprite(0, 600, 'player').setScale(.5);
+    player = this.physics.add.sprite(0, 625, 'player');
     player.body.gravity.y = 500;    
     player.inverted = false;
     player.setBounce(0.2); // our player will bounce from items
     player.setCollideWorldBounds(true); // don't go out of the map    
     
     // small fix to our player images, we resize the physics body object slightly
-    player.body.setSize(player.width, player.height);
+    //player.body.setSize(player.width, player.height);
     
     // player will collide with the level tiles 
     this.physics.add.collider(worldLayer, player);
@@ -101,15 +101,16 @@ function create() {
     // player walk animation
     this.anims.create({
         key: 'walk',
-        frames: this.anims.generateFrameNames('player', {prefix: 'p1_walk', start: 1, end: 11, zeroPad: 2}),
+        frames: this.anims.generateFrameNumbers('player', { start: 2, end: 5}),
         frameRate: 10,
         repeat: -1
     });
     // idle with only one frame, so repeat is not neaded
     this.anims.create({
         key: 'idle',
-        frames: [{key: 'player', frame: 'p1_stand'}],
+        frames: this.anims.generateFrameNumbers('player', {start: 0, end: 1}),
         frameRate: 10,
+        repeat: -1,
     });
 
 
