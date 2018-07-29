@@ -23,17 +23,17 @@ var config = {
     
 };
 
-var game = new Phaser.Game(config);
-
 var loadingText;
 var map;
 var player;
 var cursors;
+var escKey;
 var skyLayer, worldLayer, leverLayer, treasureLayer, accentsLayer, behindLayer, spikesLayer;
 var text;
 var score = 0;
 var inverted = false;
 var game;
+var winText;
 
 window.onload = function() {
   game = new Phaser.Game(config);
@@ -124,7 +124,7 @@ function create() {
     
 
     // create the player sprite    
-    player = this.physics.add.sprite(9, 767, 'player');
+    player = this.physics.add.sprite(9, 760, 'player');
     player.body.gravity.y = 2000;    
     player.inverted = false;
     player.setBounce(0.2); // our player will bounce from items
@@ -141,9 +141,11 @@ function create() {
 
     // when the player overlaps with a tile with index 129-132, reset
     // will be called    
-    treasureLayer.setTileIndexCallback(153, collectTreasure, this);
-    this.physics.add.overlap(player, treasureLayer);
-
+    spikesLayer.setTileIndexCallback(129, spikesTrigger, this);
+    spikesLayer.setTileIndexCallback(130, spikesTrigger, this);
+    spikesLayer.setTileIndexCallback(131, spikesTrigger, this);
+    spikesLayer.setTileIndexCallback(132, spikesTrigger, this);
+    this.physics.add.overlap(player, spikesLayer);
     
     // player walk animation
     this.anims.create({
@@ -161,7 +163,9 @@ function create() {
     });
 
 
+    // Keybindings
     cursors = this.input.keyboard.createCursorKeys();
+    escKey = this.input.keyboard.addKey(27);
 
     // set bounds so the camera won't go outside the game world
     this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
@@ -172,13 +176,14 @@ function create() {
     this.cameras.main.setBackgroundColor('#ccccff');
 
     // this text will show the score
-    text = this.add.text(315, 5, 'Treasure Chests:', {
+    scoreText = this.add.text(315, 5, 'Treasure Chests:', {
         font: 'bold 14pt Arial',
         //fontSize: '14px',
         fill: '#FFFF00'
     });
     // fix the text to the camera
-    text.setScrollFactor(0);
+    scoreText.setScrollFactor(0);
+    scoreText.setShadow(1,1,'#000000',1);
     
 
     // check for collision with lever tiles and call flipLever 
@@ -192,7 +197,21 @@ function create() {
 function collectTreasure(sprite, tile) {
     treasureLayer.removeTileAt(tile.x, tile.y); // remove the treasure chest
     score++; // add 10 points to the score
-    text.setText('Treasure Chests:' + score); // set the text to show the current score
+    
+    if (score == 34)
+    {
+            var winTextStyle = { font: 'bold 20pt Arial', fill: 'green', align: 'center', wordWrap: { width: 125, useAdvancedWrap: true } };
+
+            winText = this.add.text(200, 100, "You WIN! Press F5 to reset.", winTextStyle);
+            // fix the text to the camera
+            winText.setScrollFactor(0);
+            winText.setShadow(1,1,'#000000',1);
+    
+            this.scene.pause();
+            return;
+    }
+    else
+    scoreText.setText('Treasure Chests:' + score); // set the text to show the current score
     return false;
 }
  //function to remove text
@@ -271,3 +290,20 @@ function inverseGravity()
         player.inverted = false;    
     }
 }
+
+
+// Triggers restart screen upon touching spike
+function spikesTrigger()
+{
+    var endTextStyle = { font: 'bold 14pt Arial', fill: 'red', align: 'center', wordWrap: { width: 125, useAdvancedWrap: true } };
+
+    endText = this.add.text(200, 100, "You've been spiked! Press F5 to reset.", endTextStyle);
+    // fix the text to the camera
+    endText.setScrollFactor(0);
+    endText.setShadow(1,1,'#000000',1);
+    
+    this.scene.pause();
+    return;
+}
+
+
