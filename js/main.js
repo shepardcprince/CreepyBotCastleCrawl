@@ -23,6 +23,9 @@ var config = {
     
 };
 
+var game = new Phaser.Game(config);
+
+var loadingText;
 var map;
 var player;
 var cursors;
@@ -54,6 +57,7 @@ function resize() {
 }
 
 
+
 function preload() {
     // map made with Tiled in JSON format
     this.load.tilemapTiledJSON('map', 'assets/CastleMap.json');
@@ -68,10 +72,10 @@ function preload() {
 }
 
 function create() {
+    
+    
     // load the map 
     map = this.make.tilemap({key: 'map'});
-    
-    this.cameras.main.zoom = 1;
     
     // Sky background tiles
     var skyTiles = map.addTilesetImage('Sky');
@@ -114,6 +118,10 @@ function create() {
     // set the boundaries of our game world
     this.physics.world.bounds.width = worldLayer.width;
     this.physics.world.bounds.height = worldLayer.height;
+    
+    //creating instructions text
+   
+    
 
     // create the player sprite    
     player = this.physics.add.sprite(9, 767, 'player');
@@ -187,6 +195,7 @@ function collectTreasure(sprite, tile) {
     text.setText('Treasure Chests:' + score); // set the text to show the current score
     return false;
 }
+ //function to remove text
 
 //flips the player when they touch the lever
 function flipLever(player, lever) {
