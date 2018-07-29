@@ -119,9 +119,12 @@ function create() {
     this.physics.world.bounds.width = worldLayer.width;
     this.physics.world.bounds.height = worldLayer.height;
     
-    //creating instructions text
-   
     
+        
+    //instruction text
+    loadingText = this.add.text(9, 767, "Collect all 34 chests. Use the Space bar to 'flip' the switches to explore more.", { font: "20px Arial", fill: "#ff0044", align: "center" });
+    this.key = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
+   
 
     // create the player sprite    
     player = this.physics.add.sprite(9, 760, 'player');
@@ -175,6 +178,8 @@ function create() {
     // set background color, so the sky is not black    
     this.cameras.main.setBackgroundColor('#ccccff');
 
+    
+
     // this text will show the score
     scoreText = this.add.text(315, 5, 'Treasure Chests:', {
         font: 'bold 14pt Arial',
@@ -215,6 +220,9 @@ function collectTreasure(sprite, tile) {
     return false;
 }
  //function to remove text
+function removeText() {
+    loadingText.destroy();
+}
 
 //flips the player when they touch the lever
 function flipLever(player, lever) {
@@ -271,6 +279,9 @@ function update(time, delta) {
         
     }
     
+    if (this.key.isDown && loadingText ===true) {
+     removeText();
+  }
         
 }
 
