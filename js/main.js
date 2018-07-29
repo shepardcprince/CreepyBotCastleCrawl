@@ -26,7 +26,7 @@ var config = {
 var map;
 var player;
 var cursors;
-var skyLayer, worldLayer, leverLayer, treasureLayer, accentsLayer, behindLayer;
+var skyLayer, worldLayer, leverLayer, treasureLayer, accentsLayer, behindLayer, spikesLayer;
 var text;
 var score = 0;
 var inverted = false;
@@ -105,6 +105,12 @@ function create() {
     // add levers as layers
     leverLayer = map.createDynamicLayer('Levers', leverTiles, 0, 0,);
     
+    // spikes tileset image
+    var spikesTiles = map.addTilesetImage('Gothic_Castle_Tileset');
+    // add spikes as layers
+    spikesLayer = map.createDynamicLayer('Spikes', spikesTiles, 0, 0,);
+    
+    
     // set the boundaries of our game world
     this.physics.world.bounds.width = worldLayer.width;
     this.physics.world.bounds.height = worldLayer.height;
@@ -119,11 +125,18 @@ function create() {
     // player will collide with the level tiles 
     this.physics.add.collider(worldLayer, player);
 
-    treasureLayer.setTileIndexCallback(153, collectTreasure, this);
+    
     // when the player overlaps with a tile with index 152, collectTreasure 
     // will be called    
+    treasureLayer.setTileIndexCallback(153, collectTreasure, this);
     this.physics.add.overlap(player, treasureLayer);
 
+    // when the player overlaps with a tile with index 129-132, reset
+    // will be called    
+    treasureLayer.setTileIndexCallback(153, collectTreasure, this);
+    this.physics.add.overlap(player, treasureLayer);
+
+    
     // player walk animation
     this.anims.create({
         key: 'walk',
@@ -151,23 +164,19 @@ function create() {
     this.cameras.main.setBackgroundColor('#ccccff');
 
     // this text will show the score
-    text = this.add.text(250, 5, 'Treasure Chests:', {
-        fontSize: '14px',
+    text = this.add.text(315, 5, 'Treasure Chests:', {
+        font: 'bold 14pt Arial',
+        //fontSize: '14px',
         fill: '#FFFF00'
     });
     // fix the text to the camera
     text.setScrollFactor(0);
     
-   //star added, will be lever  
-/*    lever = this.physics.add.image(350, 750, 'lever');
-    lever1 = this.physics.add.image(350, 250, 'lever');
-    lever1.body.allowGravity = false;
-    lever.setCollideWorldBounds(true); // don't go out of the map
-    // lever will collide with the level tiles 
-    this.physics.add.collider(worldLayer, lever);*/
+
+    // check for collision with lever tiles and call flipLever 
     leverLayer.setTileIndexCallback(166, flipLever, this);
     this.physics.add.overlap(player, leverLayer);
-    //this.physics.add.overlap(player, lever1, flipLever, null, this);
+    
     
 }
 
@@ -211,7 +220,7 @@ function update(time, delta) {
     // jump 
     if (cursors.up.isDown && player.body.onFloor() && !player.inverted)
     {
-        player.body.setVelocityY(-500);        
+        player.body.setVelocityY(-550);        
     }
     
     //for inverted play movement
@@ -230,7 +239,7 @@ function update(time, delta) {
    
     if (cursors.down.isDown && player.inverted && player.body.blocked.up)
     {
-        player.body.setVelocityY(500);  
+        player.body.setVelocityY(550);  
         
     }
     
