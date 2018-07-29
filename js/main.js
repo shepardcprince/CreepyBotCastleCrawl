@@ -14,7 +14,9 @@ var config = {
         preload: preload,
         create: create,
         update: update
-    }
+    },
+    pixelArt: true
+    
 };
 
 var game = new Phaser.Game(config);
@@ -43,6 +45,8 @@ function preload() {
 function create() {
     // load the map 
     map = this.make.tilemap({key: 'map'});
+    
+    this.cameras.main.zoom = 1;
     
     // Sky background tiles
     var skyTiles = map.addTilesetImage('Sky');
@@ -127,13 +131,15 @@ function create() {
     // fix the text to the camera
     text.setScrollFactor(0);
     
-   //star added, will be lever
-    this.add.image(600, 400, 'lever');
+   //star added, will be lever  
     lever = this.physics.add.image(250, 400, 'lever');
+    lever1 = this.physics.add.image(350, 250, 'lever');
+    lever1.body.allowGravity = false;
     lever.setCollideWorldBounds(true); // don't go out of the map
     // lever will collide with the level tiles 
     this.physics.add.collider(worldLayer, lever);
-    this.physics.add.overlap(player, lever, flipLever);
+    this.physics.add.overlap(player, lever, flipLever, null, this);
+    this.physics.add.overlap(player, lever1, flipLever, null, this);
 }
 
 // this function will be called when the player touches a treasure chest
@@ -146,14 +152,11 @@ function collectTreasure(sprite, tile) {
 
 
 function flipLever(player, lever) {
+        if (this.time.now - this.fliptime < 1000)
+            {return;}
     
-    if (cursors.up.isDown && player.body.onFloor())
-    {
         inverseGravity();
-        
-    }
-    
-    
+        this.fliptime = this.time.now;
   
 }
 
@@ -174,11 +177,18 @@ function update(time, delta) {
         player.anims.play('idle', true);
     }
     // jump 
-    if (cursors.up.isDown && player.body.onFloor())
+    if (cursors.up.isDown && player.body.onFloor() && !player.inverted)
     {
         player.body.setVelocityY(-500);        
     }
     
+    if (cursors.down.isDown && player.inverted && player.body.blocked.up)
+    {
+        player.body.setVelocityY(500);  
+        
+    }
+    
+        
 }
 
 function inverseGravity() 
@@ -186,13 +196,13 @@ function inverseGravity()
     if (player.inverted === false) 
     {        
         player.angle = -180;        
-        player.body.gravity.y = -2000;        
+        player.body.gravity.y = -1500;        
         player.inverted = true;    
     } 
-    else 
+    else if (player.inverted ===true)
     {        
         player.angle = 0;        
-        player.body.gravity.y = 2000;        
+        player.body.gravity.y = 500;        
         player.inverted = false;    
     }
 }
