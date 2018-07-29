@@ -25,6 +25,7 @@ var cursors;
 var skyLayer, worldLayer, leverLayer, treasureLayer, accentsLayer, behindLayer;
 var text;
 var score = 0;
+var inverted = false;
 
 function preload() {
     // map made with Tiled in JSON format
@@ -77,6 +78,8 @@ function create() {
 
     // create the player sprite    
     player = this.physics.add.sprite(0, 600, 'player').setScale(.5);
+    player.body.gravity.y = 500;    
+    player.inverted = false;
     player.setBounce(0.2); // our player will bounce from items
     player.setCollideWorldBounds(true); // don't go out of the map    
     
@@ -143,9 +146,10 @@ function collectTreasure(sprite, tile) {
 
 
 function flipLever(player, lever) {
-     if (cursors.up.isDown && player.body.onFloor())
+    
+    if (cursors.up.isDown && player.body.onFloor())
     {
-        player.setBounce(.9);
+        inverseGravity();
         
     }
     
@@ -175,4 +179,20 @@ function update(time, delta) {
         player.body.setVelocityY(-500);        
     }
     
+}
+
+function inverseGravity() 
+{    
+    if (player.inverted === false) 
+    {        
+        player.angle = -180;        
+        player.body.gravity.y = -2000;        
+        player.inverted = true;    
+    } 
+    else 
+    {        
+        player.angle = 0;        
+        player.body.gravity.y = 2000;        
+        player.inverted = false;    
+    }
 }
