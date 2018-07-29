@@ -115,7 +115,8 @@ function create() {
     
         
     //instruction text
-    loadingText = this.add.text(9, 767, "Collect the chest. Use the Space bar to 'flip' the switches to explore more.", { font: "20px Arial", fill: "#ff0044", align: "center" });
+    loadingText = this.add.text(9, 767, "Collect all 34 chests. Use the Space bar to 'flip' the switches to explore more.", { font: "20px Arial", fill: "#ff0044", align: "center" });
+    this.key = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
    
 
     // create the player sprite    
@@ -249,6 +250,9 @@ function update(time, delta) {
         
     }
     
+    if (this.key.isDown && loadingText ===true) {
+     removeText();
+  }
         
 }
 
