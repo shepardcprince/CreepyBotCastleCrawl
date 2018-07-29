@@ -1,7 +1,7 @@
 var config = {
     type: Phaser.AUTO,
-    width: 800,
-    height: 600,
+    width: 400,
+    height: 200,
     physics: {
         default: 'arcade',
         arcade: {
@@ -19,7 +19,9 @@ var config = {
     
 };
 
-var game = new Phaser.Game(config);
+
+//var game = new Phaser.Game(config);
+//var game = new Phaser.Game(config);
 
 var map;
 var player;
@@ -28,6 +30,37 @@ var skyLayer, worldLayer, leverLayer, treasureLayer, accentsLayer, behindLayer;
 var text;
 var score = 0;
 var inverted = false;
+var game;
+var gameWidth = 800;
+var gameHeight = 600;
+
+window.onload = function() {
+ /* var config = {
+    type: Phaser.CANVAS,
+    width: gameWidth,
+    height: gameHeight,
+    scene: [main]
+  };*/
+  game = new Phaser.Game(config);
+  resize();
+  window.addEventListener("resize", resize, false);
+};
+
+function resize() {
+  var canvas = document.querySelector("canvas");
+  var windowWidth = window.innerWidth;
+  var windowHeight = window.innerHeight;
+  var windowRatio = windowWidth / windowHeight;
+  var gameRatio = game.config.width / game.config.height;
+  if (windowRatio < gameRatio) {
+    canvas.style.width = windowWidth + "px";
+    canvas.style.height = (windowWidth / gameRatio) + "px";
+  } else {
+    canvas.style.width = (windowHeight * gameRatio) + "px";
+    canvas.style.height = windowHeight + "px";
+  }
+}
+
 
 function preload() {
     // map made with Tiled in JSON format
@@ -39,7 +72,8 @@ function preload() {
     //star--will be lever
     this.load.image('lever', 'assets/star.png');
     // Sky background    
-    this.load.image('Sky', 'assets/sky.png')
+    this.load.image('Sky', 'assets/sky.png');
+    window['game']['canvas'][game.device.fullscreen.request]();
 }
 
 function create() {
