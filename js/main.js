@@ -23,7 +23,6 @@ var config = {
     
 };
 
-var game = new Phaser.Game(config);
 
 var loadingText;
 var map;
@@ -113,9 +112,11 @@ function create() {
     this.physics.world.bounds.width = worldLayer.width;
     this.physics.world.bounds.height = worldLayer.height;
     
-    //creating instructions text
-   
     
+        
+    //instruction text
+    loadingText = this.add.text(9, 767, "Collect the chest. Use the Space bar to 'flip' the switches to explore more.", { font: "20px Arial", fill: "#ff0044", align: "center" });
+   
 
     // create the player sprite    
     player = this.physics.add.sprite(9, 767, 'player');
@@ -158,6 +159,8 @@ function create() {
     // set background color, so the sky is not black    
     this.cameras.main.setBackgroundColor('#ccccff');
 
+    
+
     // this text will show the score
     text = this.add.text(250, 5, 'Treasure Chests:', {
         fontSize: '14px',
@@ -187,6 +190,9 @@ function collectTreasure(sprite, tile) {
     return false;
 }
  //function to remove text
+function removeText() {
+    loadingText.destroy();
+}
 
 //flips the player when they touch the lever
 function flipLever(player, lever) {
