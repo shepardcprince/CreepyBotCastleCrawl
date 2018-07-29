@@ -21,6 +21,7 @@ var config = {
 
 var game = new Phaser.Game(config);
 
+var loadingText;
 var map;
 var player;
 var cursors;
@@ -28,6 +29,7 @@ var skyLayer, worldLayer, leverLayer, treasureLayer, accentsLayer, behindLayer;
 var text;
 var score = 0;
 var inverted = false;
+
 
 function preload() {
     // map made with Tiled in JSON format
@@ -39,10 +41,13 @@ function preload() {
     //star--will be lever
     this.load.image('lever', 'assets/star.png');
     // Sky background    
-    this.load.image('Sky', 'assets/sky.png')
+    this.load.image('Sky', 'assets/sky.png');
+   
 }
 
 function create() {
+    
+    
     // load the map 
     map = this.make.tilemap({key: 'map'});
     
@@ -79,6 +84,10 @@ function create() {
     // set the boundaries of our game world
     this.physics.world.bounds.width = worldLayer.width;
     this.physics.world.bounds.height = worldLayer.height;
+    
+    //creating instructions text
+   
+    
 
     // create the player sprite    
     player = this.physics.add.sprite(0, 625, 'player');
@@ -150,6 +159,7 @@ function collectTreasure(sprite, tile) {
     text.setText('Treasure Chests:' + score); // set the text to show the current score
     return false;
 }
+ //function to remove text
 
 //flips the player when they touch the lever
 function flipLever(player, lever) {
@@ -213,13 +223,13 @@ function inverseGravity()
     if (player.inverted === false) 
     {        
         player.angle = -180;        
-        player.body.gravity.y = -1500;        
+        player.body.gravity.y = -2000;        
         player.inverted = true;    
     } 
     else if (player.inverted ===true)
     {        
         player.angle = 0;        
-        player.body.gravity.y = 500;        
+        player.body.gravity.y = 2000;        
         player.inverted = false;    
     }
 }
