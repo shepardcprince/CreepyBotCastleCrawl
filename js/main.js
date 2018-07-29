@@ -1,11 +1,15 @@
+var gameWidth = 500;
+var gameHeight = 300;
+
+
 var config = {
     type: Phaser.AUTO,
-    width: 400,
-    height: 200,
+    width: gameWidth,
+    height: gameHeight,
     physics: {
         default: 'arcade',
         arcade: {
-            gravity: {y: 500},
+            gravity: {y: 0},
             debug: false
         }
     },
@@ -19,10 +23,6 @@ var config = {
     
 };
 
-
-//var game = new Phaser.Game(config);
-//var game = new Phaser.Game(config);
-
 var map;
 var player;
 var cursors;
@@ -31,16 +31,8 @@ var text;
 var score = 0;
 var inverted = false;
 var game;
-var gameWidth = 800;
-var gameHeight = 600;
 
 window.onload = function() {
- /* var config = {
-    type: Phaser.CANVAS,
-    width: gameWidth,
-    height: gameHeight,
-    scene: [main]
-  };*/
   game = new Phaser.Game(config);
   resize();
   window.addEventListener("resize", resize, false);
@@ -73,7 +65,6 @@ function preload() {
     this.load.image('lever', 'assets/star.png');
     // Sky background    
     this.load.image('Sky', 'assets/sky.png');
-    window['game']['canvas'][game.device.fullscreen.request]();
 }
 
 function create() {
@@ -106,23 +97,24 @@ function create() {
 
     // treasure image used as tileset
     var treasureTiles = map.addTilesetImage('Gothic_Castle_Tileset');
-    // add treasure as tiles
+    // add treasure as layers
     treasureLayer = map.createDynamicLayer('Treasure', treasureTiles, 0, 0);
     
+    // Lever tileset image
+    var leverTiles = map.addTilesetImage('Gothic_Castle_Tileset');
+    // add levers as layers
+    leverLayer = map.createDynamicLayer('Levers', leverTiles, 0, 0,);
     
     // set the boundaries of our game world
     this.physics.world.bounds.width = worldLayer.width;
     this.physics.world.bounds.height = worldLayer.height;
 
     // create the player sprite    
-    player = this.physics.add.sprite(0, 625, 'player');
-    player.body.gravity.y = 500;    
+    player = this.physics.add.sprite(9, 767, 'player');
+    player.body.gravity.y = 2000;    
     player.inverted = false;
     player.setBounce(0.2); // our player will bounce from items
     player.setCollideWorldBounds(true); // don't go out of the map    
-    
-    // small fix to our player images, we resize the physics body object slightly
-    //player.body.setSize(player.width, player.height);
     
     // player will collide with the level tiles 
     this.physics.add.collider(worldLayer, player);
@@ -159,22 +151,24 @@ function create() {
     this.cameras.main.setBackgroundColor('#ccccff');
 
     // this text will show the score
-    text = this.add.text(570, 20, 'Treasure Chests:', {
-        fontSize: '20px',
+    text = this.add.text(250, 5, 'Treasure Chests:', {
+        fontSize: '14px',
         fill: '#FFFF00'
     });
     // fix the text to the camera
     text.setScrollFactor(0);
     
    //star added, will be lever  
-    lever = this.physics.add.image(250, 400, 'lever');
+/*    lever = this.physics.add.image(350, 750, 'lever');
     lever1 = this.physics.add.image(350, 250, 'lever');
     lever1.body.allowGravity = false;
     lever.setCollideWorldBounds(true); // don't go out of the map
     // lever will collide with the level tiles 
-    this.physics.add.collider(worldLayer, lever);
-    this.physics.add.overlap(player, lever, flipLever, null, this);
-    this.physics.add.overlap(player, lever1, flipLever, null, this);
+    this.physics.add.collider(worldLayer, lever);*/
+    leverLayer.setTileIndexCallback(166, flipLever, this);
+    this.physics.add.overlap(player, leverLayer);
+    //this.physics.add.overlap(player, lever1, flipLever, null, this);
+    
 }
 
 // this function will be called when the player touches a treasure chest
@@ -187,10 +181,12 @@ function collectTreasure(sprite, tile) {
 
 //flips the player when they touch the lever
 function flipLever(player, lever) {
-        if (this.time.now - this.fliptime < 1000)
+        if (this.time.now - this.fliptime < 200)
             {return;}
-    
-        inverseGravity();
+        if (cursors.space.isDown)
+            {
+                inverseGravity();
+            }
         this.fliptime = this.time.now;
   
 }
@@ -247,13 +243,13 @@ function inverseGravity()
     if (player.inverted === false) 
     {        
         player.angle = -180;        
-        player.body.gravity.y = -1500;        
+        player.body.gravity.y = -2000;        
         player.inverted = true;    
     } 
     else if (player.inverted ===true)
     {        
         player.angle = 0;        
-        player.body.gravity.y = 500;        
+        player.body.gravity.y = 2000;        
         player.inverted = false;    
     }
 }
