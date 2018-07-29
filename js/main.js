@@ -1,11 +1,15 @@
+var gameWidth = 500;
+var gameHeight = 300;
+
+
 var config = {
     type: Phaser.AUTO,
-    width: 800,
-    height: 600,
+    width: gameWidth,
+    height: gameHeight,
     physics: {
         default: 'arcade',
         arcade: {
-            gravity: {y: 500},
+            gravity: {y: 0},
             debug: false
         }
     },
@@ -29,6 +33,29 @@ var skyLayer, worldLayer, leverLayer, treasureLayer, accentsLayer, behindLayer;
 var text;
 var score = 0;
 var inverted = false;
+var game;
+
+window.onload = function() {
+  game = new Phaser.Game(config);
+  resize();
+  window.addEventListener("resize", resize, false);
+};
+
+function resize() {
+  var canvas = document.querySelector("canvas");
+  var windowWidth = window.innerWidth;
+  var windowHeight = window.innerHeight;
+  var windowRatio = windowWidth / windowHeight;
+  var gameRatio = game.config.width / game.config.height;
+  if (windowRatio < gameRatio) {
+    canvas.style.width = windowWidth + "px";
+    canvas.style.height = (windowWidth / gameRatio) + "px";
+  } else {
+    canvas.style.width = (windowHeight * gameRatio) + "px";
+    canvas.style.height = windowHeight + "px";
+  }
+}
+
 
 
 function preload() {
@@ -42,7 +69,6 @@ function preload() {
     this.load.image('lever', 'assets/star.png');
     // Sky background    
     this.load.image('Sky', 'assets/sky.png');
-   
 }
 
 function create() {
@@ -50,8 +76,6 @@ function create() {
     
     // load the map 
     map = this.make.tilemap({key: 'map'});
-    
-    this.cameras.main.zoom = 1;
     
     // Sky background tiles
     var skyTiles = map.addTilesetImage('Sky');
@@ -77,9 +101,13 @@ function create() {
 
     // treasure image used as tileset
     var treasureTiles = map.addTilesetImage('Gothic_Castle_Tileset');
-    // add treasure as tiles
+    // add treasure as layers
     treasureLayer = map.createDynamicLayer('Treasure', treasureTiles, 0, 0);
     
+    // Lever tileset image
+    var leverTiles = map.addTilesetImage('Gothic_Castle_Tileset');
+    // add levers as layers
+    leverLayer = map.createDynamicLayer('Levers', leverTiles, 0, 0,);
     
     // set the boundaries of our game world
     this.physics.world.bounds.width = worldLayer.width;
@@ -90,14 +118,11 @@ function create() {
     
 
     // create the player sprite    
-    player = this.physics.add.sprite(0, 625, 'player');
-    player.body.gravity.y = 500;    
+    player = this.physics.add.sprite(9, 767, 'player');
+    player.body.gravity.y = 2000;    
     player.inverted = false;
     player.setBounce(0.2); // our player will bounce from items
     player.setCollideWorldBounds(true); // don't go out of the map    
-    
-    // small fix to our player images, we resize the physics body object slightly
-    //player.body.setSize(player.width, player.height);
     
     // player will collide with the level tiles 
     this.physics.add.collider(worldLayer, player);
@@ -134,22 +159,24 @@ function create() {
     this.cameras.main.setBackgroundColor('#ccccff');
 
     // this text will show the score
-    text = this.add.text(570, 20, 'Treasure Chests:', {
-        fontSize: '20px',
+    text = this.add.text(250, 5, 'Treasure Chests:', {
+        fontSize: '14px',
         fill: '#FFFF00'
     });
     // fix the text to the camera
     text.setScrollFactor(0);
     
    //star added, will be lever  
-    lever = this.physics.add.image(250, 400, 'lever');
+/*    lever = this.physics.add.image(350, 750, 'lever');
     lever1 = this.physics.add.image(350, 250, 'lever');
     lever1.body.allowGravity = false;
     lever.setCollideWorldBounds(true); // don't go out of the map
     // lever will collide with the level tiles 
-    this.physics.add.collider(worldLayer, lever);
-    this.physics.add.overlap(player, lever, flipLever, null, this);
-    this.physics.add.overlap(player, lever1, flipLever, null, this);
+    this.physics.add.collider(worldLayer, lever);*/
+    leverLayer.setTileIndexCallback(166, flipLever, this);
+    this.physics.add.overlap(player, leverLayer);
+    //this.physics.add.overlap(player, lever1, flipLever, null, this);
+    
 }
 
 // this function will be called when the player touches a treasure chest
@@ -163,10 +190,12 @@ function collectTreasure(sprite, tile) {
 
 //flips the player when they touch the lever
 function flipLever(player, lever) {
-        if (this.time.now - this.fliptime < 1000)
+        if (this.time.now - this.fliptime < 200)
             {return;}
-    
-        inverseGravity();
+        if (cursors.space.isDown)
+            {
+                inverseGravity();
+            }
         this.fliptime = this.time.now;
   
 }
