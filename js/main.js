@@ -308,7 +308,7 @@ function spikesTrigger()
 {
     var endTextStyle = { font: 'bold 14pt Arial', fill: 'red', align: 'center', wordWrap: { width: 125, useAdvancedWrap: true } };
 
-    endText = this.add.text(200, 100, "You've been spiked! Press F5 to reset.", endTextStyle);
+    endText = this.add.text(200, 100, "You've been hit! Press F5 to reset.", endTextStyle);
     // fix the text to the camera
     endText.setScrollFactor(0);
     endText.setShadow(1,1,'#000000',1);
